@@ -19,14 +19,29 @@ const T = {
 
 // ─── STORAGE ──────────────────────────────────────────────────────────────────
 const STORAGE_KEY = "vil_scorecard_v2";
+const API = "/api";
+
 const loadAll = async () => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
+    const res = await fetch(`${API}/data`);
+    if (!res.ok) throw new Error("server unavailable");
+    const data = await res.json();
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+    return data;
+  } catch {
+    try { const raw = localStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+  }
 };
+
 const saveAll = async (data) => {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
+  try {
+    await fetch(`${API}/data`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  } catch {}
 };
 const todayKey = () => new Date().toISOString().slice(0, 10);
 const fmtDate = (k) => { const [y,m,d] = k.split("-"); return `${m}/${d}/${y}`; };
@@ -442,8 +457,18 @@ export default function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [sheetsEnabled, setSheetsEnabled] = useState(false);
+  const [spreadsheetId, setSpreadsheetId] = useState(null);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState(null);
 
-  useEffect(() => { loadAll().then(d => { setAllData(d); setLoaded(true); }); }, []);
+  useEffect(() => {
+    loadAll().then(d => { setAllData(d); setLoaded(true); });
+    fetch(`${API}/status`).then(r => r.json()).then(s => {
+      setSheetsEnabled(s.sheetsEnabled);
+      setSpreadsheetId(s.spreadsheetId);
+    }).catch(() => {});
+  }, []);
 
   const dayData = allData[dateKey]||{};
   const setField = (sid, key, val) => {
@@ -454,9 +479,33 @@ export default function App() {
   };
   const getSection = (id) => (allData[dateKey]||{})[id]||{};
 
+  const handleSync = async (dateToSync, data) => {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await fetch(`${API}/sync/${dateToSync}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Sync failed");
+      setSyncMsg({ ok: true, text: "Synced to Sheets" });
+    } catch (err) {
+      setSyncMsg({ ok: false, text: err.message });
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 5000);
+    }
+  };
+
   const handleSave = async () => {
-    setSaving(true); await saveAll(allData); setSaving(false); setSaved(true);
-    setTimeout(()=>setSaved(false), 2200);
+    setSaving(true);
+    await saveAll(allData);
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2200);
+    if (sheetsEnabled) handleSync(dateKey, dayData);
   };
   const handleExport = () => {
     setExporting(true);
@@ -579,7 +628,19 @@ export default function App() {
               <div style={{ width:4, height:32, background:T.yellow, borderRadius:2 }} />
               <div>
                 <div style={{ color:T.white, fontWeight:900, fontSize:18, letterSpacing:-0.5 }}>Daily Scorecards</div>
-                <div style={{ color:T.grayL, fontSize:11, marginTop:1 }}>Leadership Performance — Previous Day</div>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginTop:2 }}>
+                  <div style={{ color:T.grayL, fontSize:11 }}>Leadership Performance — Previous Day</div>
+                  {sheetsEnabled ? (
+                    <a href={`https://docs.google.com/spreadsheets/d/${spreadsheetId}`} target="_blank" rel="noreferrer"
+                      style={{ fontSize:10, color:T.green, fontWeight:700, textDecoration:"none", background:"#4CAF7D18", border:`1px solid ${T.green}33`, borderRadius:4, padding:"1px 6px", letterSpacing:0.3 }}>
+                      ● Sheets Connected
+                    </a>
+                  ) : (
+                    <span style={{ fontSize:10, color:"#555", fontWeight:600, background:"#1C1C1C", border:"1px solid #2A2A2A", borderRadius:4, padding:"1px 6px" }}>
+                      ○ Sheets: setup needed
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
@@ -593,6 +654,17 @@ export default function App() {
                 style={{ background:T.surface, border:`1px solid ${T.yellow}44`, color:T.yellow, borderRadius:7, padding:"7px 13px", cursor:"pointer", fontSize:13, fontWeight:600, fontFamily:"inherit", opacity:exporting?0.6:1 }}>
                 {exporting?"Building…":"⬇ Export PDF"}
               </button>
+              {sheetsEnabled && (
+                <button onClick={()=>handleSync(dateKey, dayData)} disabled={syncing}
+                  style={{ background:T.surface, border:`1px solid ${T.green}44`, color:T.green, borderRadius:7, padding:"7px 13px", cursor:"pointer", fontSize:13, fontWeight:600, fontFamily:"inherit", opacity:syncing?0.6:1 }}>
+                  {syncing?"Syncing…":"⬆ Sync to Sheets"}
+                </button>
+              )}
+              {syncMsg && (
+                <span style={{ fontSize:12, color:syncMsg.ok?T.green:T.red, fontWeight:700, whiteSpace:"nowrap" }}>
+                  {syncMsg.ok?"✓":"✗"} {syncMsg.text}
+                </span>
+              )}
               <button onClick={handleSave}
                 style={{ background:saved?T.green:T.yellow, border:"none", color:saved?T.white:T.black, borderRadius:7, padding:"7px 20px", cursor:"pointer", fontSize:13, fontWeight:900, fontFamily:"inherit", transition:"all 0.2s", minWidth:76 }}>
                 {saving?"Saving…":saved?"✓ Saved":"Save"}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+
+# Environment — contains API keys and secrets
+.env
+
+# Scorecard data — contains business data, keep local
+data/
+
+# Google service account credentials — never commit
+credentials/
+
+# OS / editor
+.DS_Store
+*.local
