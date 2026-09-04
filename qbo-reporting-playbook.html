@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Step-by-step guide to reproducing V.I.L. Landscaping's accountant-grade QuickBooks Online reports.">
+<style>*{margin:0;padding:0;box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>QBO Reporting Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --black:#0A0A0A; --card:#141414; --surface:#1C1C1C; --surface2:#202020;
+    --border:#2A2A2A; --border-lit:#3A3A3A;
+    --yellow:#F5C518; --yellowD:#D4A90E; --yellow-dim:rgba(245,197,24,.14);
+    --white:#FFFFFF; --text:#E8E8E8; --dim:#8A8A8A; --dimmer:#5A5A5A;
+    --green:#4CAF7D; --red:#E05252; --blue:#5B9BD5;
+    --disp:'Archivo', system-ui, sans-serif;
+    --body:'IBM Plex Sans', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--black); color:var(--text); font-family:var(--body);
+    line-height:1.6; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  a{color:var(--yellow); text-decoration:none;}
+
+  /* ---- masthead ---- */
+  header.mast{border-bottom:1px solid var(--border);
+    background:
+      radial-gradient(120% 140% at 85% -20%, rgba(245,197,24,.10), transparent 55%),
+      linear-gradient(180deg,#0d0d0d,var(--black));}
+  .mast-inner{max-width:var(--maxw); margin:0 auto; padding:34px 24px 40px;}
+  .brand{display:flex; align-items:center; gap:12px; margin-bottom:34px;}
+  .brand .mark{font-family:var(--disp); font-weight:900; letter-spacing:.5px;
+    font-size:15px; color:var(--black); background:var(--yellow);
+    padding:5px 9px; border-radius:4px; line-height:1;}
+  .brand .who{font-family:var(--mono); font-size:12px; color:var(--dim);
+    letter-spacing:.5px; text-transform:uppercase;}
+  .eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:2.5px;
+    text-transform:uppercase; color:var(--yellow); margin-bottom:16px;}
+  h1{font-family:var(--disp); font-weight:900; font-size:clamp(38px,7vw,68px);
+    line-height:.98; letter-spacing:-1.5px; margin:0 0 20px; text-wrap:balance;
+    color:var(--white);}
+  h1 .lo{color:var(--yellow);}
+  .lede{font-size:clamp(16px,2.2vw,19px); color:var(--text); max-width:60ch;
+    margin:0 0 28px;}
+  .lede b{color:var(--white); font-weight:600;}
+  .factbar{display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--border);
+    border-radius:8px; overflow:hidden; background:var(--card);}
+  .factbar .f{flex:1 1 170px; padding:14px 18px; border-right:1px solid var(--border);}
+  .factbar .f:last-child{border-right:none;}
+  .factbar .k{font-family:var(--mono); font-size:10.5px; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--dim); margin-bottom:5px;}
+  .factbar .v{font-family:var(--disp); font-weight:700; font-size:16px; color:var(--white);}
+  .factbar .v small{font-family:var(--mono); font-weight:500; font-size:11px;
+    color:var(--dim); display:block; letter-spacing:.3px; margin-top:2px;}
+
+  /* ---- sections ---- */
+  section{padding:56px 0 8px;}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px;}
+  .sec-num{font-family:var(--mono); font-size:13px; color:var(--yellowD);
+    letter-spacing:1px;}
+  h2{font-family:var(--disp); font-weight:800; font-size:clamp(24px,3.6vw,34px);
+    letter-spacing:-.6px; margin:0; color:var(--white); text-wrap:balance;}
+  .sec-sub{color:var(--dim); max-width:64ch; margin:10px 0 30px; font-size:15.5px;}
+  .sec-sub b{color:var(--text); font-weight:600;}
+
+  /* ---- overview report cards ---- */
+  .grid4{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  .rcard{background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:22px 22px 20px; position:relative; overflow:hidden;}
+  .rcard::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:var(--yellow); opacity:.85;}
+  .rcard .tag{font-family:var(--mono); font-size:10.5px; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--dim);}
+  .rcard h3{font-family:var(--disp); font-weight:700; font-size:20px; color:var(--white);
+    margin:6px 0 4px; letter-spacing:-.3px;}
+  .rcard p{font-size:14px; color:var(--dim); margin:0 0 16px;}
+  .rcard .spec{border-top:1px solid var(--border); padding-top:13px;
+    display:grid; gap:7px;}
+  .rcard .spec .row{display:flex; justify-content:space-between; gap:12px;
+    font-size:12.5px; align-items:baseline;}
+  .rcard .spec .row .lbl{color:var(--dimmer); font-family:var(--mono); font-size:11px;
+    letter-spacing:.4px; text-transform:uppercase; white-space:nowrap;}
+  .rcard .spec .row .val{color:var(--text); text-align:right; font-weight:500;}
+
+  /* ---- foundation callouts ---- */
+  .found{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .fcell{background:linear-gradient(180deg,var(--card),#101010);
+    border:1px solid var(--border); border-radius:10px; padding:20px;}
+  .fcell .n{font-family:var(--disp); font-weight:900; font-size:13px; color:var(--black);
+    background:var(--yellow); width:24px; height:24px; border-radius:50%;
+    display:grid; place-items:center; margin-bottom:14px;}
+  .fcell h4{font-family:var(--disp); font-weight:700; font-size:16px; color:var(--white);
+    margin:0 0 6px;}
+  .fcell p{font-size:13.5px; color:var(--dim); margin:0 0 12px;}
+  .fpath{font-family:var(--mono); font-size:11.5px; color:var(--text);
+    background:var(--black); border:1px solid var(--border); border-radius:6px;
+    padding:9px 11px; line-height:1.7;}
+  .fpath b{color:var(--yellow); font-weight:600;}
+
+  /* ---- step blocks ---- */
+  .report-block{background:var(--card); border:1px solid var(--border);
+    border-radius:12px; padding:26px 26px 8px; margin-bottom:18px;}
+  .rb-head{display:flex; align-items:center; justify-content:space-between;
+    gap:16px; flex-wrap:wrap; margin-bottom:4px;}
+  .rb-head h3{font-family:var(--disp); font-weight:800; font-size:22px; color:var(--white);
+    margin:0; letter-spacing:-.3px;}
+  .rb-badge{font-family:var(--mono); font-size:11px; letter-spacing:.5px;
+    color:var(--yellow); background:var(--yellow-dim); border:1px solid rgba(245,197,24,.3);
+    padding:4px 10px; border-radius:20px; white-space:nowrap;}
+  .rb-open{font-family:var(--mono); font-size:12.5px; color:var(--dim);
+    margin:2px 0 20px; padding-bottom:18px; border-bottom:1px solid var(--border);}
+  .rb-open b{color:var(--text);}
+  ol.steps{list-style:none; margin:0; padding:0; counter-reset:s;}
+  ol.steps>li{counter-increment:s; display:grid; grid-template-columns:34px 1fr;
+    gap:16px; padding:15px 0; border-bottom:1px solid var(--border);}
+  ol.steps>li:last-child{border-bottom:none;}
+  ol.steps>li::before{content:counter(s,decimal-leading-zero);
+    font-family:var(--mono); font-size:12px; font-weight:600; color:var(--yellowD);
+    padding-top:3px; letter-spacing:.5px;}
+  .st-title{font-weight:600; color:var(--white); font-size:15px; margin-bottom:3px;}
+  .st-body{font-size:14px; color:var(--dim);}
+  .st-body b{color:var(--text); font-weight:600;}
+  .ctl{font-family:var(--mono); font-size:12.5px; color:var(--white);
+    background:var(--surface); border:1px solid var(--border-lit); border-radius:5px;
+    padding:1px 7px; white-space:nowrap;}
+  .set{font-family:var(--mono); font-size:12.5px; color:var(--yellow);}
+  .note{margin-top:8px; font-size:13px; color:var(--dim); background:var(--black);
+    border-left:2px solid var(--yellowD); padding:9px 13px; border-radius:0 6px 6px 0;}
+  .note b{color:var(--yellow); font-weight:600;}
+
+  /* ---- decoder table ---- */
+  .tblwrap{overflow-x:auto; border:1px solid var(--border); border-radius:10px;
+    background:var(--card);}
+  table{border-collapse:collapse; width:100%; min-width:640px; font-size:13.5px;}
+  thead th{font-family:var(--mono); font-size:10.5px; letter-spacing:1.2px;
+    text-transform:uppercase; color:var(--dim); text-align:left; font-weight:500;
+    padding:14px 18px; border-bottom:1px solid var(--border-lit); background:var(--surface);}
+  tbody td{padding:13px 18px; border-bottom:1px solid var(--border);
+    vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  td .what{color:var(--white); font-weight:600;}
+  td.mono{font-family:var(--mono); font-size:12px; color:var(--text);}
+  td.mono .hl{color:var(--yellow);}
+  tbody tr:hover td{background:rgba(245,197,24,.03);}
+
+  /* ---- analytical rows ---- */
+  .kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:16px;}
+  .kpi{background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:20px 22px;}
+  .kpi .name{font-family:var(--disp); font-weight:700; font-size:16px; color:var(--white);
+    margin-bottom:2px;}
+  .kpi .formula{font-family:var(--mono); font-size:12.5px; color:var(--yellow);
+    margin:8px 0 14px; background:var(--black); border:1px solid var(--border);
+    border-radius:6px; padding:9px 12px; overflow-x:auto;}
+  .kpi .eg{display:flex; align-items:baseline; gap:10px; font-size:13px; color:var(--dim);}
+  .kpi .eg .big{font-family:var(--disp); font-weight:800; font-size:26px;
+    color:var(--white); letter-spacing:-.5px; font-variant-numeric:tabular-nums;}
+  .kpi .eg .big.neg{color:var(--red);}
+  .kpi .eg .big.pos{color:var(--green);}
+  .kpi .eg small{font-family:var(--mono); font-size:11px; color:var(--dimmer);}
+
+  /* ---- elite / automation ---- */
+  .lane{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .elite{background:var(--card); border:1px solid var(--border); border-radius:10px;
+    padding:22px;}
+  .elite .h{display:flex; align-items:center; gap:10px; margin-bottom:6px;}
+  .elite .h .dot{width:8px; height:8px; border-radius:50%; background:var(--yellow);
+    flex:none;}
+  .elite h4{font-family:var(--disp); font-weight:700; font-size:17px; color:var(--white);
+    margin:0;}
+  .elite p{font-size:14px; color:var(--dim); margin:0 0 14px;}
+  .elite ol, .elite ul{margin:0; padding-left:0; list-style:none;}
+  .elite ol li, .elite ul li{font-size:13.5px; color:var(--text); padding:7px 0 7px 26px;
+    position:relative; border-top:1px solid var(--border);}
+  .elite ol{counter-reset:e;}
+  .elite ol li{counter-increment:e;}
+  .elite ol li::before{content:counter(e); position:absolute; left:0; top:7px;
+    font-family:var(--mono); font-size:11px; color:var(--black); background:var(--yellow);
+    width:17px; height:17px; border-radius:4px; display:grid; place-items:center;
+    font-weight:600;}
+  .elite ul li::before{content:"›"; position:absolute; left:6px; top:6px;
+    color:var(--yellow); font-size:15px; font-weight:700;}
+  .elite li b{color:var(--white); font-weight:600;}
+  .elite li .ctl{font-size:11.5px;}
+
+  /* ---- checklist ---- */
+  .close-note{font-size:15px; color:var(--dim); max-width:64ch; margin:0 0 22px;}
+  .close-note b{color:var(--text);}
+  .checklist{display:grid; grid-template-columns:repeat(2,1fr); gap:12px 22px;}
+  .chk{display:grid; grid-template-columns:22px 1fr; gap:12px; align-items:start;
+    padding:12px 0; border-bottom:1px solid var(--border);}
+  .chk .box{width:18px; height:18px; border:1.5px solid var(--border-lit);
+    border-radius:4px; margin-top:2px;}
+  .chk .box.acct{border-color:var(--yellowD); background:var(--yellow-dim);}
+  .chk .t{font-size:14px; color:var(--text);}
+  .chk .t b{color:var(--white); font-weight:600;}
+  .chk .t .mini{display:block; font-size:12px; color:var(--dimmer); margin-top:2px;}
+  .chk .t .yours{color:var(--yellow); font-family:var(--mono); font-size:11.5px;}
+
+  /* ---- footer ---- */
+  footer{margin-top:64px; border-top:1px solid var(--border); background:#0c0c0c;}
+  .foot-inner{max-width:var(--maxw); margin:0 auto; padding:30px 24px 44px;
+    display:flex; justify-content:space-between; align-items:center; gap:20px;
+    flex-wrap:wrap;}
+  .foot-inner .l{font-family:var(--mono); font-size:12px; color:var(--dim);
+    line-height:1.8;}
+  .foot-inner .l b{color:var(--text);}
+  .foot-inner .r{font-family:var(--disp); font-weight:900; font-size:13px;
+    color:var(--black); background:var(--yellow); padding:6px 11px; border-radius:4px;}
+
+  .rule{height:1px; background:var(--border); margin:8px 0 0;}
+  @media (max-width:720px){
+    .grid4,.found,.kpis,.lane,.checklist{grid-template-columns:1fr;}
+    .factbar .f{flex-basis:50%;}
+    ol.steps>li{grid-template-columns:26px 1fr; gap:12px;}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    a,.rcard,tbody tr{transition:.15s ease;}
+  }
+</style>
+
+<header class="mast">
+  <div class="mast-inner">
+    <div class="brand">
+      <span class="mark">VIL</span>
+      <span class="who">V.I.L. Landscaping Inc. &nbsp;·&nbsp; Finance Operations</span>
+    </div>
+    <div class="eyebrow">The Month-End Reporting Playbook</div>
+    <h1>Run your books like <span class="lo">your accountant does</span>.</h1>
+    <p class="lede">A step-by-step guide to reproducing your <b>Balance Sheet</b>, <b>P&amp;L Summary</b>, <b>P&amp;L Detailed</b>, and <b>P&amp;L by Class</b> straight from QuickBooks Online &mdash; matched setting-for-setting to the package you already receive, then upgraded into a board-ready report suite.</p>
+    <div class="factbar">
+      <div class="f"><div class="k">Reporting Basis</div><div class="v">Accrual<small>not cash</small></div></div>
+      <div class="f"><div class="k">Fiscal Year</div><div class="v">Starts April 1<small>13-month trend view</small></div></div>
+      <div class="f"><div class="k">Segments</div><div class="v">3 Classes<small>Construction · Enhance · Maint.</small></div></div>
+      <div class="f"><div class="k">Reference File</div><div class="v">April 2026<small>V.I.L. Reporting.xlsx</small></div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- OVERVIEW -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§01</span><h2>The four reports in your package</h2></div>
+    <p class="sec-sub">Each one is a standard QuickBooks Online report with a specific set of customizations. Here's the exact spec behind every tab in your file &mdash; the recipes follow in &sect;03.</p>
+    <div class="grid4">
+
+      <div class="rcard">
+        <div class="tag">Tab 1 · Position</div>
+        <h3>Balance Sheet</h3>
+        <p>What you own, owe, and are worth &mdash; as of a single date, versus last month.</p>
+        <div class="spec">
+          <div class="row"><span class="lbl">Period</span><span class="val">As of month-end</span></div>
+          <div class="row"><span class="lbl">Compare</span><span class="val">Previous period (PP)</span></div>
+          <div class="row"><span class="lbl">Basis</span><span class="val">Accrual</span></div>
+          <div class="row"><span class="lbl">Columns</span><span class="val">Total only</span></div>
+        </div>
+      </div>
+
+      <div class="rcard">
+        <div class="tag">Tab 2 · Performance</div>
+        <h3>P&amp;L Summary</h3>
+        <p>Income, COGS, and expenses at the account level, one column per month.</p>
+        <div class="spec">
+          <div class="row"><span class="lbl">Period</span><span class="val">Trailing 13 months</span></div>
+          <div class="row"><span class="lbl">Columns</span><span class="val">Months + Total</span></div>
+          <div class="row"><span class="lbl">Rows</span><span class="val">Collapsed</span></div>
+          <div class="row"><span class="lbl">Basis</span><span class="val">Accrual</span></div>
+        </div>
+      </div>
+
+      <div class="rcard">
+        <div class="tag">Tab 3 · Detail</div>
+        <h3>P&amp;L Detailed</h3>
+        <p>The same monthly P&amp;L, expanded so every sub-account shows on its own line.</p>
+        <div class="spec">
+          <div class="row"><span class="lbl">Period</span><span class="val">Trailing 13 months</span></div>
+          <div class="row"><span class="lbl">Columns</span><span class="val">Months + Total</span></div>
+          <div class="row"><span class="lbl">Rows</span><span class="val">Expanded</span></div>
+          <div class="row"><span class="lbl">Basis</span><span class="val">Accrual</span></div>
+        </div>
+      </div>
+
+      <div class="rcard">
+        <div class="tag">Tab 4 · Segments</div>
+        <h3>P&amp;L by Class</h3>
+        <p>One month split across your divisions, with each line as a % of revenue.</p>
+        <div class="spec">
+          <div class="row"><span class="lbl">Period</span><span class="val">Single month</span></div>
+          <div class="row"><span class="lbl">Columns</span><span class="val">Classes</span></div>
+          <div class="row"><span class="lbl">Extra col</span><span class="val">% of income</span></div>
+          <div class="row"><span class="lbl">Basis</span><span class="val">Accrual</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOUNDATIONS -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§02</span><h2>Set these three things once &mdash; or nothing will match</h2></div>
+    <p class="sec-sub">Your file uses <b>numbered accounts</b> (4000, 5200&hellip;), splits revenue into <b>classes</b>, and reports on an <b>accrual basis</b>. If any of these are off in your settings, your reports will look different from your accountant's no matter how you run them. Check all three first.</p>
+    <div class="found">
+
+      <div class="fcell">
+        <div class="n">1</div>
+        <h4>Turn on account numbers</h4>
+        <p>This is why your lines read "4000 Construction Revenue" instead of just "Construction Revenue."</p>
+        <div class="fpath"><b>Gear</b> &rsaquo; Account and settings &rsaquo; <b>Advanced</b> &rsaquo; Chart of accounts &rsaquo; toggle <b>Enable account numbers</b> &amp; Show account numbers</div>
+      </div>
+
+      <div class="fcell">
+        <div class="n">2</div>
+        <h4>Turn on class tracking</h4>
+        <p>Powers the by-Class report. Each transaction gets tagged Construction, Enhancements, or Maintenance.</p>
+        <div class="fpath"><b>Gear</b> &rsaquo; Account and settings &rsaquo; <b>Advanced</b> &rsaquo; Categories &rsaquo; <b>Track classes = On</b> &rsaquo; Assign one to each row</div>
+      </div>
+
+      <div class="fcell">
+        <div class="n">3</div>
+        <h4>Default to accrual basis</h4>
+        <p>Your Balance Sheet has A/R, A/P and deferred revenue &mdash; those only appear on accrual. Cash basis hides them.</p>
+        <div class="fpath"><b>Gear</b> &rsaquo; Account and settings &rsaquo; <b>Advanced</b> &rsaquo; Accounting &rsaquo; <b>Accounting method = Accrual</b></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- RECIPES -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§03</span><h2>The recipes</h2></div>
+    <p class="sec-sub">Every QBO report opens the same way: <b>Reports</b> in the left menu &rarr; open the report &rarr; hit <span class="ctl">Customize</span> (top right) &rarr; set the options below &rarr; <span class="ctl">Run report</span>. The <span class="ctl">Customize</span> panel has four sections: <span class="set">General</span>, <span class="set">Rows/Columns</span>, <span class="set">Filter</span>, <span class="set">Header/Footer</span>.</p>
+
+    <!-- Balance Sheet -->
+    <div class="report-block">
+      <div class="rb-head"><h3>Balance Sheet</h3><span class="rb-badge">Tab 1 · Position</span></div>
+      <div class="rb-open">Reports &rsaquo; <b>Balance Sheet</b></div>
+      <ol class="steps">
+        <li><div><div class="st-title">Set the report date</div><div class="st-body">In <span class="set">General &rsaquo; Report period</span>, choose <span class="ctl">As of</span> and set the date to your month-end &mdash; e.g. <b>04/30/2026</b>.</div></div></li>
+        <li><div><div class="st-title">Add the prior-month comparison column</div><div class="st-body">In <span class="set">Rows/Columns &rsaquo; Compare another period</span>, tick <span class="ctl">Previous period (PP)</span>. That produces your second column, "As of Mar 31, 2026 (PP)."</div></div></li>
+        <li><div><div class="st-title">Confirm accrual basis</div><div class="st-body">In <span class="set">General &rsaquo; Accounting method</span>, select <span class="ctl">Accrual</span>.</div></div></li>
+        <li><div><div class="st-title">Show all active rows</div><div class="st-body">In <span class="set">Rows/Columns</span>, set <span class="ctl">Show non-zero or active only</span> &rarr; <span class="set">Rows = Active</span> so zero-balance accounts still list (your file shows them).</div>
+          <div class="note"><b>Shortcut:</b> QBO also ships a canned <b>Balance Sheet Comparison</b> report that has the PP column pre-built &mdash; use it and skip step 2.</div></div></li>
+      </ol>
+    </div>
+
+    <!-- P&L Summary -->
+    <div class="report-block">
+      <div class="rb-head"><h3>Profit &amp; Loss &mdash; Summary</h3><span class="rb-badge">Tab 2 · Performance</span></div>
+      <div class="rb-open">Reports &rsaquo; <b>Profit and Loss</b></div>
+      <ol class="steps">
+        <li><div><div class="st-title">Set the trailing 13-month window</div><div class="st-body">In <span class="set">General &rsaquo; Report period</span>, pick <span class="ctl">Custom</span> and enter <b>04/01/2025</b> to <b>04/30/2026</b>. Thirteen months lets April 2026 sit next to April 2025 for a clean year-over-year read.</div></div></li>
+        <li><div><div class="st-title">Break the columns out by month</div><div class="st-body">In <span class="set">Rows/Columns &rsaquo; Display columns by</span>, choose <span class="ctl">Months</span>. A <span class="set">Total</span> column is added automatically on the right.</div></div></li>
+        <li><div><div class="st-title">Keep rows collapsed</div><div class="st-body">Use the <span class="ctl">Collapse</span> button above the report so accounts roll up to the parent level (e.g. "5000 Direct Labour" as one line). This is what makes it the <b>Summary</b>.</div></div></li>
+        <li><div><div class="st-title">Accrual basis, then run</div><div class="st-body">Set <span class="set">Accounting method = Accrual</span> and hit <span class="ctl">Run report</span>.</div>
+          <div class="note"><b>Your April 2026 numbers, as a check:</b> Total Income <b>$222,102.66</b>, Total COGS <b>$197,685.33</b>, Gross Profit <b>$24,417.33</b>. If your run matches, every setting above is correct.</div></div></li>
+      </ol>
+    </div>
+
+    <!-- P&L Detailed -->
+    <div class="report-block">
+      <div class="rb-head"><h3>Profit &amp; Loss &mdash; Detailed</h3><span class="rb-badge">Tab 3 · Detail</span></div>
+      <div class="rb-open">Same report as Tab 2 &mdash; one control changes</div>
+      <ol class="steps">
+        <li><div><div class="st-title">Start from the Summary you just built</div><div class="st-body">Everything is identical: custom period <b>04/01/2025&ndash;04/30/2026</b>, <span class="set">columns by Months</span>, accrual.</div></div></li>
+        <li><div><div class="st-title">Expand the rows</div><div class="st-body">Click <span class="ctl">Expand</span> above the report (the opposite of Collapse). Now every sub-account prints on its own line &mdash; "5010 Field wages," "5050 Bonus," "5100 Payroll taxes" &mdash; under each parent total.</div>
+          <div class="note"><b>Don't confuse this</b> with the report literally named "Profit and Loss Detail." That one lists every individual transaction. Your "Detailed" tab is the monthly summary <b>expanded to sub-accounts</b>, so stay on the Profit and Loss report and just use Expand.</div></div></li>
+      </ol>
+    </div>
+
+    <!-- P&L by Class -->
+    <div class="report-block">
+      <div class="rb-head"><h3>Profit &amp; Loss &mdash; by Class</h3><span class="rb-badge">Tab 4 · Segments</span></div>
+      <div class="rb-open">Reports &rsaquo; <b>Profit and Loss by Class</b> &nbsp;(or Profit and Loss, then change columns)</div>
+      <ol class="steps">
+        <li><div><div class="st-title">Set a single month</div><div class="st-body">In <span class="set">General &rsaquo; Report period</span>, choose the one month &mdash; <b>04/01/2026</b> to <b>04/30/2026</b>. This report is a snapshot, not a trend.</div></div></li>
+        <li><div><div class="st-title">Put your divisions across the top</div><div class="st-body">In <span class="set">Rows/Columns &rsaquo; Display columns by</span>, choose <span class="ctl">Classes</span>. You'll get Construction, Enhancements and Maintenance columns plus a Total.</div></div></li>
+        <li><div><div class="st-title">Add the "% of income" column</div><div class="st-body">In <span class="set">Rows/Columns</span>, tick <span class="ctl">% of income</span>. That's your "% of Revenue" column &mdash; each line shown as a share of total revenue.</div></div></li>
+        <li><div><div class="st-title">Run and sanity-check the split</div><div class="st-body">Construction should read <b>$148,742.56 (67%)</b> and Maintenance <b>$73,360.10 (33%)</b> of April income.</div>
+          <div class="note"><b>Tip:</b> a "Not Specified" column means some transactions weren't tagged with a class. Chase those down &mdash; untagged rows quietly distort every segment margin.</div></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- DECODER -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§04</span><h2>Settings decoder</h2></div>
+    <p class="sec-sub">See something in your file and want to know which switch produced it? This maps every visible feature back to its QBO control.</p>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th style="width:34%">What you see in the file</th><th style="width:33%">Where it lives in QBO</th><th style="width:33%">Setting</th></tr></thead>
+        <tbody>
+          <tr><td><span class="what">"(PP)" comparison column</span></td><td class="mono">Rows/Columns</td><td class="mono">Compare another period &rsaquo; <span class="hl">Previous period</span></td></tr>
+          <tr><td><span class="what">One column per month</span></td><td class="mono">Rows/Columns</td><td class="mono">Display columns by &rsaquo; <span class="hl">Months</span></td></tr>
+          <tr><td><span class="what">Columns per division</span></td><td class="mono">Rows/Columns</td><td class="mono">Display columns by &rsaquo; <span class="hl">Classes</span></td></tr>
+          <tr><td><span class="what">"% of Revenue" column</span></td><td class="mono">Rows/Columns</td><td class="mono">Add column &rsaquo; <span class="hl">% of income</span></td></tr>
+          <tr><td><span class="what">Summary vs. sub-account detail</span></td><td class="mono">Toolbar above report</td><td class="mono"><span class="hl">Collapse</span> / <span class="hl">Expand</span></td></tr>
+          <tr><td><span class="what">Account numbers (4000&hellip;)</span></td><td class="mono">Gear &rsaquo; Advanced</td><td class="mono">Chart of accounts &rsaquo; <span class="hl">Account numbers on</span></td></tr>
+          <tr><td><span class="what">A/R, A/P, deferred revenue showing</span></td><td class="mono">General</td><td class="mono">Accounting method &rsaquo; <span class="hl">Accrual</span></td></tr>
+          <tr><td><span class="what">Zero-balance accounts still listed</span></td><td class="mono">Rows/Columns</td><td class="mono">Show non-zero or active only &rsaquo; <span class="hl">Active</span></td></tr>
+          <tr><td><span class="what">"Total" column on the far right</span></td><td class="mono">Rows/Columns</td><td class="mono">Automatic with <span class="hl">Months</span> / <span class="hl">Classes</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ANALYTICAL ROWS -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§05</span><h2>The four analytical rows that make it look "elite"</h2></div>
+    <p class="sec-sub">Your P&amp;L Summary ends with rows QBO doesn't print natively &mdash; the margin math a reader actually wants. QBO's <b>% of income</b> column gets you close; for the exact rows below, add them in the export (or read them off the values shown). Figures are your <b>April 2026</b> actuals.</p>
+    <div class="kpis">
+
+      <div class="kpi">
+        <div class="name">Gross Margin %</div>
+        <div class="formula">= Gross Profit &divide; Total Income</div>
+        <div class="eg"><span class="big pos">11%</span><small>= 24,417.33 &divide; 222,102.66</small></div>
+      </div>
+
+      <div class="kpi">
+        <div class="name">Overhead % of Revenue</div>
+        <div class="formula">= Total Expenses &divide; Total Income</div>
+        <div class="eg"><span class="big">33%</span><small>= 74,289.14 &divide; 222,102.66</small></div>
+      </div>
+
+      <div class="kpi">
+        <div class="name">Operating Income Before Tax</div>
+        <div class="formula">= Gross Profit &minus; Total Expenses + Other Income</div>
+        <div class="eg"><span class="big neg">&minus;$49,825</span><small>24,417 &minus; 74,289 + 46</small></div>
+      </div>
+
+      <div class="kpi">
+        <div class="name">Net Profit</div>
+        <div class="formula">= Operating Income &minus; Other Expenses</div>
+        <div class="eg"><span class="big neg">&minus;$49,825</span><small>other expenses were $0 in April</small></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MAKE IT ELITE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§06</span><h2>Make it a one-click monthly package</h2></div>
+    <p class="sec-sub">Once each report is customized, you never rebuild it. Save it, group the four together, and have QBO email a branded PDF to you and your accountant automatically.</p>
+    <div class="lane">
+
+      <div class="elite">
+        <div class="h"><span class="dot"></span><h4>Save &amp; group the four reports</h4></div>
+        <p>Turn tonight's setup into a permanent, reusable set.</p>
+        <ol>
+          <li>On each finished report, click <span class="ctl">Save customization</span>.</li>
+          <li>Name it plainly &mdash; <b>"01 Balance Sheet,"</b> <b>"02 P&amp;L Summary,"</b> etc.</li>
+          <li>Under <b>Add this report to a group</b>, create one group: <b>"Monthly Board Package."</b></li>
+          <li>Find them any time under <span class="ctl">Reports &rsaquo; Custom reports</span>.</li>
+        </ol>
+      </div>
+
+      <div class="elite">
+        <div class="h"><span class="dot"></span><h4>Auto-email it every month</h4></div>
+        <p>The whole group goes out on a schedule &mdash; no one has to remember.</p>
+        <ol>
+          <li>Go to <span class="ctl">Reports &rsaquo; Custom reports</span> and find your group.</li>
+          <li>Open <b>Edit</b> on the group &rsaquo; <b>Set the email schedule = On</b>.</li>
+          <li>Set it for the <b>5th of each month</b> (after close), recipients = you + your accountant.</li>
+          <li>Attach as <b>Excel and PDF</b> so both are on file.</li>
+        </ol>
+      </div>
+
+      <div class="elite">
+        <div class="h"><span class="dot"></span><h4>Build a branded report package</h4></div>
+        <p>QBO's presentation-ready reports add a cover page and notes &mdash; this is the "elite" look.</p>
+        <ul>
+          <li>Open <span class="ctl">Reports &rsaquo; Management reports</span> (a.k.a. presentation-ready).</li>
+          <li>Create a template; add a <b>cover page with the VIL logo</b> and a table of contents.</li>
+          <li>Drop in Balance Sheet, both P&amp;Ls, and P&amp;L by Class.</li>
+          <li>Add a short <b>executive summary note</b> up front, export one clean PDF.</li>
+        </ul>
+      </div>
+
+      <div class="elite">
+        <div class="h"><span class="dot"></span><h4>Add the three reports pros always include</h4></div>
+        <p>A complete package is more than a P&amp;L. Add these to graduate from good to elite.</p>
+        <ul>
+          <li><b>Statement of Cash Flows</b> &mdash; profit isn't cash; this shows the difference.</li>
+          <li><b>A/R &amp; A/P Aging Summary</b> &mdash; you carry <b>$128K receivable</b> and <b>$142K payable</b>; watch the aging.</li>
+          <li><b>Budget vs. Actuals</b> &mdash; set a budget in QBO, then this report grades every month against it.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CLOSE CHECKLIST -->
+  <section>
+    <div class="sec-head"><span class="sec-num">§07</span><h2>Close the month before you run it</h2></div>
+    <p class="close-note">Elite reporting is really <b>clean data</b>, run on time. Your accountant's numbers look authoritative because the books are <b>closed</b> first. Work this checklist before pulling any report &mdash; the highlighted items are ones your specific books clearly need each month.</p>
+    <div class="checklist">
+      <div class="chk"><div class="box"></div><div class="t"><b>Reconcile all cash &amp; card accounts</b><span class="mini">RBC Operating + all four RBC Visa business cards</span></div></div>
+      <div class="chk"><div class="box"></div><div class="t"><b>Clear Undeposited Funds</b><span class="mini">Match deposits so nothing sits in 1100</span></div></div>
+      <div class="chk"><div class="box acct"></div><div class="t"><b>Recognize deferred revenue</b><span class="yours">Deferred Maintenance $56K · Deferred Design-Build $145K</span></div></div>
+      <div class="chk"><div class="box"></div><div class="t"><b>Review A/R and A/P</b><span class="mini">Confirm $128K receivable &amp; $142K payable are real &amp; current</span></div></div>
+      <div class="chk"><div class="box acct"></div><div class="t"><b>Book depreciation &amp; amortization</b><span class="mini">Vehicles A/D, Equipment A/D, software/website</span></div></div>
+      <div class="chk"><div class="box acct"></div><div class="t"><b>Accrue payroll, WSIB &amp; HST</b><span class="yours">WSIB payable, GST/HST payable, payroll liabilities</span></div></div>
+      <div class="chk"><div class="box acct"></div><div class="t"><b>Check every transaction has a Class</b><span class="mini">No "Not Specified" rows on the by-Class report</span></div></div>
+      <div class="chk"><div class="box"></div><div class="t"><b>Clear the Suspense &amp; Clearing accounts</b><span class="mini">GST/HST Suspense, 3999 Suspense, Cash Clearing to $0</span></div></div>
+      <div class="chk"><div class="box"></div><div class="t"><b>Review the overhead allocation</b><span class="mini">Account 6950 &mdash; confirm the month's split is posted</span></div></div>
+      <div class="chk"><div class="box acct"></div><div class="t"><b>Set a closing date &amp; lock the books</b><span class="mini">Gear &rsaquo; Account and settings &rsaquo; Advanced &rsaquo; Close the books</span></div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="foot-inner">
+    <div class="l">
+      <b>V.I.L. Landscaping Inc.</b> &mdash; Month-End Reporting Playbook<br>
+      Built against your April 2026 QuickBooks Online export · Accrual basis · FY starts April 1<br>
+      Figures shown are your own April 2026 actuals, used as verification checkpoints.
+    </div>
+    <div class="r">VIL</div>
+  </div>
+</footer>
+
+</body>
+</html>
